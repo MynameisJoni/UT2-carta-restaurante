@@ -1,0 +1,46 @@
+{
+    "bebidas": [
+        {
+            "nombre": "French Vanilla",
+            "precio": 1.50
+        },
+        {
+            "nombre": "Caramel Macchiato",
+            "precio": 1.40
+        },
+        {
+            "nombre": "Cappuccino",
+            "precio": 1.20
+        },
+        {
+            "nombre": "Espresso",
+            "precio": 1.00
+        },
+        {
+            "nombre": "Latte",
+            "precio": 1.30
+        }
+    ],
+    "postres": [
+        {
+            "nombre": "Cheesecake",
+            "precio": 2.50
+        },
+        {
+            "nombre": "Chocolate Cake",
+            "precio": 2.40
+        },
+        {
+            "nombre": "Red Velvet Cake",
+            "precio": 2.60
+        },
+        {
+            "nombre": "Carrot Cake",
+            "precio": 2.20
+        },
+        {
+            "nombre": "Apple Pie",
+            "precio": 2.30
+        }
+    ]
+}

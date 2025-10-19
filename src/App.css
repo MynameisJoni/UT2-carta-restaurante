@@ -1,0 +1,80 @@
+.contenedor{
+  position: relative; /* Posicionar el contenedor para los elementos hijos */
+  width: 30%;
+  height: 100vh; /* Ocupa toda la altura de la ventana */
+  overflow: hidden; /* Elimina todo lo que sobresalga del contenedor */
+}
+.carta{
+  position: absolute; /* Se posiciona respecto al contenedor */ 
+  top: 5%; /* Separación superior */
+  width: 80%;
+  height: 90%;
+  margin-left: 10%;
+  background-color: rgb(217, 175, 124);
+}
+.bloqueHeader{
+  text-align: center;
+  color: black;
+}
+.bloqueHeader h1{
+  font-size: 50px;
+  font-weight: bold;
+  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  margin: 5; 
+}
+.footer{
+  text-align: center;
+  color:black;
+}
+.footer a{
+  color:black;
+  text-decoration: underline;
+}
+.bebidas{
+  color: black;
+  text-align: center;
+  display: flex;
+  flex-direction: column; /* Los elementos se colocan uno debajo del otro... */
+  align-items: center; /* ... y centrados */
+}
+.bebidas h3{
+  font-size: 40px;
+  font-weight: bold;
+  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  margin: 0; /* Elimina el margen predeterminado de la etiqueta h3 */
+}
+.listaBebidas{
+  color: black;
+  padding: 20px;
+  font-size: 20px;
+}
+.postres{
+  color: black;
+  text-align: center;
+  display: flex;
+  flex-direction: column; /* Los elementos se colocan uno debajo del otro */
+  align-items: center; /* ... y centrados */
+}
+.postres h3{
+  font-size: 40px;
+  font-weight: bold;
+  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  margin: 0; /* Elimina el margen predeterminado de la etiqueta h3 */
+}
+.listaPostres{
+  color: black;
+  padding: 20px;
+  font-size: 20px;
+}
+.lista{
+  width: 100%;
+  display: flex;
+  justify-content: space-between; /* Separamos los elementos dentro del bloque */
+}
+hr {
+  color: #650101;
+  margin-left: 15px;
+  margin-right: 15px;
+  border: none;
+  border-top: 5px solid;
+}
