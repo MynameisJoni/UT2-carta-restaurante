@@ -6,6 +6,13 @@
   - [Header](#header)
   - [BloqueTaza y BloquePostre](#bloquetaza-y-bloquepostre)
   - [Footer](#footer)
+- [CRUD Categorías](#crud-categorías)
+  - [EntradaCategoria](#entradacategoria)
+    - [Agregar Categoría](#agregar-categoría)
+    - [Editar Categoría](#editar-categoría)
+    - [Eliminar Categoría](#eliminar-categoría)
+    - [return](#return-entradacategorias)
+- [CRUD Productos](#crud-productos)
 - [Resultado final de App.tsx](#resultado-final-de-apptsx)
 
 En este proyecto se ha dividido la estructura de la cacrta en 5 ficheros principales:
@@ -241,13 +248,304 @@ hr {
   border-top: 5px solid;
 }
 ```
+
+## CRUD Categorías
+En esta sección se va a trabajar sobre el CRUD de las categorías. En primer lugar se han modificado el comportamiento de varios componentes. Ya los *BloqueTaza* y *BloquePostre* no formarán parte del *App.tsx* principal, ya que en este componente irá un nuevo componente *EntradaCategoria.tsx*:
+```javascript
+  <div className="carta">
+    <Header />
+    <EntradaCategoria />
+    <Footer />
+  </div>
+```
+### EntradaCategoria
+En este componente es donde se gestionarán los bloques de cada categoría, por lo que *BloqueTaza* y *BloquePostre* se renderizarán desde aquí. 
+
+En primer lugar se empleará **useState** para el manejo de las propiedades de los componentes y se definen las *'variables'* para manejar los productos, los nombres y los precios:
+```javascript
+import { useState } from 'react';
+// ...resto de código...
+const [productos, setProductos] = useState<Producto[]>([]); // listar productos
+const [nuevoNombre, setNuevoNombre] = useState(""); // Definir nuevos nombres de producto
+const [nuevoPrecio, setNuevoPrecio] = useState(""); // Definir nuevos precios de producto
+```
+A continuación se definen las funciones para agregar, editar y eliminar categorías.
+
+#### Agregar Categoría
+Para esta función se define en la función flecha el id, el nombre de la categoría y el nuevo tipo:
+
+```javascript
+const agregarCategoria = () => {
+    const nueva: Categoria ={
+        id: categorias.length + 1,
+        nombre: nuevaCategoria,
+        tipo: 'nueva'
+    };
+
+    setCategorias([...categorias, nueva]);
+    setNuevaCategoria("");
+};
+```
+Se puede apreciar que se establece la forma en la que se crea una nueva categoría siguiendo el patrón especificado en la *interface **Categorias***. Se define un id, que suma 1 al valor anterior, un nuevo nombre haciendo uso del *useState* y al ser un nuevo bloque no existente (como Taza o Postre) se define como *nueva*.
+
+#### Editar Categoría
+Para esta uso de la app se van a emplear dos funciones:
+```javascript
+  const iniciarEdicion = (id: number, nombre: string) => {
+      setEditandoId(id);
+      setNombreEditado(nombre);
+  }
+
+const editarCategoria = (id: number, nuevoNombre: string) => {
+    setCategorias(categorias.map(categoria => 
+        categoria.id === id ? {...categoria, nombre: nuevoNombre} : categoria
+    ));
+    setEditandoId(null);
+    setNombreEditado("");
+}
+```
+En primer lugar se encuentra *iniciarEdicion* que se inicia al pulsar el botón de **Editar Categoría** y recibe el nuevo nombre de la categoría del id seleccionado.
+
+Seguidamente se encuentra *editarCategoria* dónde se guarda en el id seleccionado el nuevo nombre recibido al pulsar en **Guardar**, empleando un map para mantener el resto de las propiedades intactas.
+
+#### Eliminar Categoría
+Para esta fucion vamos a usar el arreglo **filter**. Este arreglo nos va a mostrar por pantalla solo los componentes del 'array' de las categorías que le indiquemos. En este caso se le dice que nos muestre aquellos id que no hayan sido seleccionados con *eliminar*
+```javascript
+const eliminarCategoria = (id: number) => {
+    setCategorias(categorias.filter(categoria => categoria.id !== id));
+};
+```
+
+#### return EntradaCategorias
+En el retorno de la función se verán las siguientes propiedades:
+- Input para introducir categorías
+- Input para edición de la categoría
+- Bloques de cada categoría
+- Botones para editar y modificar
+
+En primer lugar se define el bloque para añadir categorías a la carta:
+```javascript
+<div className="añadirCategoria">
+    <input
+        type="text"
+        value = {nuevaCategoria}
+        onChange={(i) => setNuevaCategoria(i.target.value)}
+        placeholder='Añadir nueva categoría...' />
+    <button onClick={agregarCategoria}>Añadir Categoría</button>
+</div>
+```
+Simplemente se define un cuadro *input* para agregar el nombre de la nueva categoría y un botón para añadir.
+
+En el siguiente bloque se define el nuevo nombre de la categoría **solamente** si le damos a botón de editar:
+```javascript
+{categorias.map((categoria) => (
+  <div key={categoria.id} className='bloqueCategoria'>
+      {editandoId === categoria.id ? (
+          <div className='editarCategoria'>
+              <input
+                  type='text'
+                  value={nombreEditado}
+                  onChange={(i) => setNombreEditado(i.target.value)}/>
+              <button 
+                  onClick={() => editarCategoria(categoria.id, nombreEditado)}
+                  className='boton-guardar'>
+                  Guardar
+              </button>
+          </div>
+      ) : (
+          <h3>{categoria.nombre}</h3>
+      )}
+```
+Con un map recorremos los *ids** existentes y, si existe, se habilita un *input* en el título de la categoría para editarla. A continuación aparecerá un botón para guardar y ya se obtiene el nuevo nombre de la categoría.
+
+Más adelante encontramos los componentes ya conocidos más un nuevo componente, que se explicará más adelante:
+```javascript
+{categoria.tipo === 'bebidas' ? (<BloqueTaza />) 
+: categoria.tipo === 'postre' ? (<BloquePostre />)
+: (<BloqueNuevaCategoria />)}
+```
+Y finalmente se encuentran los botones para editar y eliminar:
+```javascript
+<div className='botones-categoria'>
+    <button
+        onClick={() => iniciarEdicion(categoria.id, categoria.nombre)}
+        className='boton-editar'>
+        Editar Categoria
+    </button>
+    <button
+        onClick={() => eliminarCategoria(categoria.id)}
+        className="boton-eliminar">
+        Eliminar Categoría - {categoria.nombre}
+    </button>
+</div>
+```
+Estos botónes afectan a cada bloque, es decir, cada categoría va a tener sus botones de edición y eliminar y funcionan de la siguiente manera:
+- Editar: llama a la funcion *iniciarEdicion* y selecciona el id de la categoría y el nombre de la misma
+- Eliminar: llama a la función *eliminarCategoría* y elimina el id de la categoría correspondiente.
+
+## CRUD Productos
+En esta sección se va a tratar el crud para cada componente. Se ha empleado varios *CRUD* por separado:
+- En los componentes predefinidos Taza y Postre
+- En un nuevo componente para agregar productos a las nuevas categorías explicadas anteriormente
+
+Ambos *CRUD*, aunque empleados en distintos componentes, funcionan de la misma manera, así que se procederá a explicar el *CRUD* desde el nuevo componente ***BloqueNuevaCategoria***.
+
+### Añadir Producto
+Para la creación de nuevos productos primero se van a inicializar los siguientes useState:
+```javascript
+const [productos, setProductos] = useState<Producto[]>([]); // listar productos
+const [nuevoNombre, setNuevoNombre] = useState(""); // Definir nuevos nombres de producto
+const [nuevoPrecio, setNuevoPrecio] = useState(""); // Definir nuevos precios de producto
+```
+- Se incia un array para almacenar los productos
+- Se definen los nombres
+- Se definen los precios
+
+A continuación se define la función para poder añadir:
+```javascript
+const anadirProducto = () => {
+    if(productos.length < 6){
+
+        const nuevoProducto = {
+            nombre: nuevoNombre, 
+            precio: parseFloat(nuevoPrecio),
+        };
+
+        setProductos([...productos, nuevoProducto]);
+        setNuevoNombre("");
+        setNuevoPrecio("");
+
+    } else {
+        alert("máximo de 6 artículos alcanzado");
+    }
+}
+```
+* En este caso se ha decicido establecer el máximo de productos a 6
+
+Siempre que no superemos el límite de 6, se iniciará un diccionario en que indicaremos nombre y precio. A continuación se hará uso del useState para definir un nuevo producto o listar los existentes y añadir uno nuevo. Seguidamente se reiniciarán los formularios.
+
+La implementación de este bloque se hace de la siguiente forma:
+```javascript
+<input 
+    type="text"
+    placeholder="Nombre del producto..."
+    value={nuevoNombre}
+    onChange={(e) => setNuevoNombre(e.target.value)}
+    />
+<input 
+    type="number"
+    placeholder="Precio del producto..."
+    value={nuevoPrecio}
+    onChange={(e) => setNuevoPrecio(e.target.value)}
+/>
+<button onClick = {anadirProducto}>Añadir</button>
+```
+- Se añade un input para el precio...
+- ...otro diferente para producto
+- Botón añadir que llama la funcion añadirProducto
+
+
+### Editar Producto
+De manera similar al anterior apartado, se definen una serie de useState:
+```javascript
+const [editandoId, setEditandoId] = useState<number | null>(null); // Seleccionar id para editar
+const [nombreEditado, setNombreEditado] = useState(""); 
+const [precioEditado, setPrecioEditado] = useState("");
+```
+- Primero accedermos al id del producto a editar
+- Se definen nuevo nombre y precio
+
+Como se hizo en *categorias* se usarán dos funciones: una para acceder y editar los datos y otra para guardarlos:
+```javascript
+const iniciarEdicion = (index: number, producto: Producto) => {
+    setEditandoId(index);
+    setNombreEditado(producto.nombre);
+    setPrecioEditado(producto.precio.toString());
+};
+
+const guardarEdicion = (index: number) => {
+    const ProductosActualizados = productos.map((producto, i) => {
+        if(i === index){
+            return {
+                nombre: nombreEditado,
+                precio: parseFloat(precioEditado)
+            };
+        }
+        return producto;
+    });
+    setProductos(ProductosActualizados);
+    setEditandoId(null);
+    setNombreEditado("");
+    setPrecioEditado("");
+};
+```
+En *iniciarEdicion* se accede al id del producto (accedemos a su posición en el array...) y se define el nuevo nombre y precio
+
+A continuación, en *guardarEdicion*, recorremos el array de productos hasta dar con el que se está editando, se almacenan en la variable *ProductosActualizados* y se devuelven en el useState *setProductos*. Finalmente se reinician los formularios.
+
+La implementación de este bloque es la siguiente:
+```javascript
+{productos.map((producto, index) => (
+    <div key={index} className='lista'>
+        {editandoId === index ? (
+            <div>
+                <input
+                    type='text'
+                    value={nombreEditado}
+                    onChange={(i) => setNombreEditado(i.target.value)}
+                />
+                <input
+                    type='number'
+                    value={precioEditado}
+                    onChange={(i) => setPrecioEditado(i.target.value)}
+                />
+                <button
+                    onClick={() => guardarEdicion(index)}
+                    className='boton-guardar'
+                >
+                    Guardar
+                </button>
+            </div>
+        ) : (
+            <div>
+                <span>{producto.nombre}</span>
+                <span>{producto.precio}€</span>
+                <button
+                    onClick={() => iniciarEdicion(index, producto)}
+                    className='boton-editar'
+                >
+                    Editar
+                </button>
+```
+En primer lugar, y como se hiciera con *BloqueTaza* y *BloquePostre*, para listar los productos de la nueva categoría, se emplea un map que recorrerá el array de productos existentes. En segundo lugar encontramos los inputs para modificar los productos, solo disponibles después de pulsar el botón de editar. Finalmente se listan los productos existentes.
+
+### Eliminar Producto 
+Para eliminar un producto se emplea la misma estrategia que con *categorias*: se usa un arreglo **filter** para mostrar solo aquellos productos que no han sido seleccionados como *'eliminados'*:
+```javascript
+const eliminarProducto = (index: number) => {
+    const nuevosProductos = productos.filter((_, i: number) => i !== index);
+    setProductos(nuevosProductos);
+}
+```
+La implementación es sencilla, simplemente un botón que llame a la función:
+```javascript
+<button
+    onClick={() => eliminarProducto(index)}
+    className='boton-eliminar'
+>
+    Eliminar
+</button>
+```
+
+*Como se dijo anteriormente, en los componentes *BloqueTaza* y *BloquePostre* se emplean las mismas funciones que el componente *'vacio'*
+
+
 ## Resultado final de App.tsx
 Una vez definidos los **componentes**, el resultado del fichero principal se debería ver de la siguiente manera:
 ```javascript
 import './App.css'
 import Header from './components/Header'
-import BloqueTaza from './components/BloqueTaza'
-import BloquePostre from './components/BloquePostre'
+import EntradaCategoria from './components/EntradaCategoria'
 import Footer from './components/Footer';
 
 export default function App() {
@@ -256,12 +554,10 @@ export default function App() {
       <img className="fondo" src="./images/beans.jpg" alt='Granos de café' />
       <div className="carta">
         <Header />
-        <BloqueTaza />  
-        <BloquePostre />
+        <EntradaCategoria />
         <Footer />
       </div>
     </div>
   )
 }
 ```
-Los estilos y contenedores principales se explicaron anteriormente, pero ahora se encuentran los cuatro componentes explicados anteriormente. 

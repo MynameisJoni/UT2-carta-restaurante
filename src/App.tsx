@@ -1,7 +1,6 @@
 import './App.css'
 import Header from './components/Header'
-import BloqueTaza from './components/BloqueTaza'
-import BloquePostre from './components/BloquePostre'
+import EntradaCategoria from './components/EntradaCategoria'
 import Footer from './components/Footer';
 
 export default function App() {
@@ -10,11 +9,9 @@ export default function App() {
       <img className="fondo" src="./images/beans.jpg" alt='Granos de café' />
       <div className="carta">
         <Header />
-        <BloqueTaza />  
-        <BloquePostre />
+        <EntradaCategoria />
         <Footer />
       </div>
     </div>
   )
 }
-

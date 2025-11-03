@@ -1,72 +1,68 @@
-import "../App.css"
-import datos from '../precios.json';
-import { useState } from "react";
+import { useState } from 'react';
+import '../App.css';
 
 interface Producto {
     nombre: string;
     precio: number;
 }
 
-export default function BloquePostre(){
+export default function BloqueNuevaCategoria(){
 
-    const [ postres, setPostres ] = useState(datos.postres);
-    const [ nuevoNombre, setNuevoNombre ] = useState("");
-    const [ nuevoPrecio, setNuevoPrecio ] = useState("");
+    const [productos, setProductos] = useState<Producto[]>([]); // listar productos
+    const [nuevoNombre, setNuevoNombre] = useState(""); // Definir nuevos nombres de producto
+    const [nuevoPrecio, setNuevoPrecio] = useState(""); // Definir nuevos precios de producto
     const [editandoId, setEditandoId] = useState<number | null>(null); // Seleccionar id para editar
     const [nombreEditado, setNombreEditado] = useState(""); 
     const [precioEditado, setPrecioEditado] = useState("");
 
-    const anadirPostre = () => {
-        if(postres.length < 6){
+    const anadirProducto = () => {
+        if(productos.length < 6){
 
-            const nuevoPostre = {
+            const nuevoProducto = {
                 nombre: nuevoNombre, 
                 precio: parseFloat(nuevoPrecio),
             };
 
-            setPostres([...postres, nuevoPostre]);
+            setProductos([...productos, nuevoProducto]);
             setNuevoNombre("");
             setNuevoPrecio("");
 
         } else {
-            alert("máximo de 6 postres alcanzado");
+            alert("máximo de 6 artículos alcanzado");
         }
-    };
+    }
 
-    const iniciarEdicion = (index: number, postre: Producto) => {
+    const iniciarEdicion = (index: number, producto: Producto) => {
         setEditandoId(index);
-        setNombreEditado(postre.nombre);
-        setPrecioEditado(postre.precio.toString());
+        setNombreEditado(producto.nombre);
+        setPrecioEditado(producto.precio.toString());
     };
 
     const guardarEdicion = (index: number) => {
-        const ProductosActualizados = postres.map((postre, i) => {
+        const ProductosActualizados = productos.map((producto, i) => {
             if(i === index){
                 return {
                     nombre: nombreEditado,
                     precio: parseFloat(precioEditado)
                 };
             }
-            return postre;
+            return producto;
         });
-        setPostres(ProductosActualizados);
+        setProductos(ProductosActualizados);
         setEditandoId(null);
         setNombreEditado("");
         setPrecioEditado("");
     };
 
-    const eliminarPostre = (index: number) => {
-        const nuevosPostres = postres.filter((_, i: number) => i !== index);
-        setPostres(nuevosPostres);
+    const eliminarProducto = (index: number) => {
+        const nuevosProductos = productos.filter((_, i: number) => i !== index);
+        setProductos(nuevosProductos);
     }
 
-    return (
+    return(
         <div>
-            <div className='postres'>
-                <img src="./images/pie.jpg" alt='tarta' />
-            </div>
-            <div className="listaPostres">
-                {postres.map((postre, index) => (
+            <div className='listaProductos'>
+                {productos.map((producto, index) => (
                     <div key={index} className='lista'>
                         {editandoId === index ? (
                             <div>
@@ -89,16 +85,16 @@ export default function BloquePostre(){
                             </div>
                         ) : (
                             <div>
-                                <span>{postre.nombre}</span>
-                                <span>{postre.precio}€</span>
+                                <span>{producto.nombre}</span>
+                                <span>{producto.precio}€</span>
                                 <button
-                                    onClick={() => iniciarEdicion(index, postre)}
+                                    onClick={() => iniciarEdicion(index, producto)}
                                     className='boton-editar'
                                 >
                                     Editar
                                 </button>
                                 <button
-                                    onClick={() => eliminarPostre(index)}
+                                    onClick={() => eliminarProducto(index)}
                                     className='boton-eliminar'
                                 >
                                     Eliminar
@@ -108,25 +104,23 @@ export default function BloquePostre(){
                     </div>
                 ))}
 
-                {postres.length < 6 && (
-                    <div className="form-anadir">
-                        <input 
-                            type="text"
-                            placeholder="Nombre del postre..."
-                            value={nuevoNombre}
-                            onChange={(e) => setNuevoNombre(e.target.value)}
-                            />
-                        <input 
-                            type="text"
-                            placeholder="Precio del postre..."
-                            value={nuevoPrecio}
-                            onChange={(e) => setNuevoPrecio(e.target.value)}
+                <div className="form-anadir">
+                    <input 
+                        type="text"
+                        placeholder="Nombre del producto..."
+                        value={nuevoNombre}
+                        onChange={(e) => setNuevoNombre(e.target.value)}
                         />
-                        <button                         
-                            className='boton-añadir'
-                            onClick = {anadirPostre}>Añadir</button>
-                    </div>
-                )}
+                    <input 
+                        type="number"
+                        placeholder="Precio del producto..."
+                        value={nuevoPrecio}
+                        onChange={(e) => setNuevoPrecio(e.target.value)}
+                    />
+                    <button 
+                        className='boton-añadir'
+                        onClick = {anadirProducto}>Añadir</button>
+                </div>
             </div>
         </div>
     );
