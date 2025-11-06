@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getCategorias, postCategorias, putCategoria, deleteCategoria } from '../../api/api';
 import BloqueTaza from './BloqueTaza';
 import BloquePostre from './BloquePostre';
 import BloqueNuevaCategoria from './BloqueNuevaCategoria';
@@ -12,50 +13,66 @@ interface Categoria{
 
 export default function EntradaCategoria(){
 
-    const [categorias, setCategorias] = useState<Categoria[]>([
-        {
-            id: 1, 
-            nombre: "Bebidas",
-            tipo: 'bebidas'
-        },
-        {
-            id: 2,
-            nombre: "Postres",
-            tipo: 'postre'
-        }
-    ]);
-
-    const [nuevaCategoria, setNuevaCategoria] = useState<string>("");
+    const [categorias, setCategorias] = useState<Categoria[]>([]);
+    const [nuevaCategoria, setNuevaCategoria] = useState("");
     const [editandoId, setEditandoId] = useState<number | null>(null);
-    const [nombreEditado, setNombreEditado] = useState<string>("");
+    const [nombreEditado, setNombreEditado] = useState("");
 
-    const agregarCategoria = () => {
-        const nueva: Categoria ={
-            id: categorias.length + 1,
-            nombre: nuevaCategoria,
-            tipo: 'nueva'
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            try {
+                const data = await getCategorias();
+                setCategorias(data);
+            } catch (error) {
+                console.error("Error al cargar las categorias:", error);
+            }
         };
+        fetchCategorias();
+    }, []);
 
-        setCategorias([...categorias, nueva]);
-        setNuevaCategoria("");
+    const agregarCategoria =  async () => {
+        try{
+            const response = await postCategorias(nuevaCategoria);
+
+            const nueva = {
+                id: response.id,
+                nombre: nuevaCategoria,
+                tipo: 'nueva' as const
+            };
+
+            setCategorias([...categorias, nueva]);
+            setNuevaCategoria("");
+        } catch (error){
+            console.error("Error al crear categoria:", error);
+        }
     };
 
-    const iniciarEdicion = (id: number, nombre: string) => {
+    const iniciarEdicion = (id: number, nombre: string) =>{
         setEditandoId(id);
         setNombreEditado(nombre);
     }
-
-    const editarCategoria = (id: number, nuevoNombre: string) => {
-        setCategorias(categorias.map(categoria => 
-            categoria.id === id ? {...categoria, nombre: nuevoNombre} : categoria
-        ));
-        setEditandoId(null);
-        setNombreEditado("");
-    }
-
-    const eliminarCategoria = (id: number) => {
-        setCategorias(categorias.filter(categoria => categoria.id !== id));
+    const editarCategoria = async(id: number, nuevoNombre: string) => {
+        try{
+            await putCategoria(id, nuevoNombre);
+            setCategorias(categorias.map(categoria => 
+                categoria.id === id ? {...categoria, nombre: nuevoNombre} : categoria
+            ));
+            setEditandoId(null);
+            setNombreEditado("");
+        } catch (error) {
+            console.error("Error al editar categoría:", error);
+        }
     };
+
+    const eliminarCategoria = async (id: number) => {
+        try{
+            await deleteCategoria(id);
+            setCategorias(categorias.filter(categoria => categoria.id !== id));
+        } catch (error){
+            console.error("Error al eliminar categoría:", error);
+        }
+    };
+    
 
     return (
         <div>
@@ -90,7 +107,7 @@ export default function EntradaCategoria(){
 
                     {categoria.tipo === 'bebidas' ? (<BloqueTaza />) 
                     : categoria.tipo === 'postre' ? (<BloquePostre />)
-                    : (<BloqueNuevaCategoria />)}
+                    : (<BloqueNuevaCategoria categoriaId={categoria.id}/>)}
 
                     <div className='botones-categoria'>
                         <button
