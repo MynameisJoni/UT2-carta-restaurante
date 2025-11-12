@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { getCategorias, postCategorias, putCategoria, deleteCategoria } from '../../api/api';
-import BloqueTaza from './BloqueTaza';
-import BloquePostre from './BloquePostre';
 import BloqueNuevaCategoria from './BloqueNuevaCategoria';
 import '../App.css';
 
@@ -105,9 +103,7 @@ export default function EntradaCategoria(){
                         <h3>{categoria.nombre}</h3>
                     )}
 
-                    {categoria.tipo === 'bebidas' ? (<BloqueTaza />) 
-                    : categoria.tipo === 'postre' ? (<BloquePostre />)
-                    : (<BloqueNuevaCategoria categoriaId={categoria.id}/>)}
+                    {(<BloqueNuevaCategoria categoriaId={categoria.id}/>)}
 
                     <div className='botones-categoria'>
                         <button
